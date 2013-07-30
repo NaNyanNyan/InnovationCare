@@ -3,8 +3,15 @@ package innovationcare.app.antibioticguidelines.ui;
 import innovationcare.app.antibioticguidelines.R;
 import android.app.Activity;
 import android.app.AlertDialog;
+<<<<<<< HEAD
 import android.os.Bundle;
 import android.view.Menu;
+=======
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+>>>>>>> 756fbce418be78fe01ce0b34109367715cc085e3
 import android.view.View;
 import android.widget.EditText;
 
@@ -32,8 +39,28 @@ public class AWBActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
+<<<<<<< HEAD
 		getMenuInflater().inflate(R.menu.cockroft, menu);
 		return true;
 	}
 
+=======
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.returnToHomeButton:
+	            Intent intent = new Intent(this, MainActivity.class);
+	            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+	            startActivity(intent);
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+>>>>>>> 756fbce418be78fe01ce0b34109367715cc085e3
 }

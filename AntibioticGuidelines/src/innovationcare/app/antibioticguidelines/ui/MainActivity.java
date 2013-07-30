@@ -11,12 +11,15 @@ import innovationcare.app.antibioticguidelines.R;
 import innovationcare.app.antibioticguidelines.UpgradeTask;
 import innovationcare.app.antibioticguidelines.cloud.UpdateUtils;
 import innovationcare.app.antibioticguidelines.database.GuidelineDataAccess;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 
 import com.kumulos.android.jsonclient.Kumulos;
 
@@ -35,8 +38,10 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.activity_main);
-
+//		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_title);
+		
 		Kumulos.initWithAPIKeyAndSecretKey("z1y3x0sjyvsqwykcmpq0fd05rhcxr7zx",
 				"r5dsh8d8", this);
 
@@ -58,13 +63,6 @@ public class MainActivity extends Activity {
 			// Commit the edits!
 			editor.commit();
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
 
 	/**
@@ -98,8 +96,45 @@ public class MainActivity extends Activity {
 	}
 
 	public void onUpgrade(View v) {
+<<<<<<< HEAD
 		UpgradeTask upgrade = new UpgradeTask(this);
 		upgrade.execute();
+=======
+		update();
+	}
+	
+	private void update() {
+		UpgradeTask upgrade = new UpgradeTask(this);
+		upgrade.execute();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.home, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+//	    // Handle item selection
+//	    switch (item.getItemId()) {
+//	        case R.id.returnToHomeButton:
+//	            Intent intent = new Intent(this, MainActivity.class);
+//	            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//	            startActivity(intent);
+//	            return true;
+//	        default:
+//	            return super.onOptionsItemSelected(item);
+//	    }
+		
+		update();
+		return true;
+	}
+	
+	public void search(View v) {
+		onSearchRequested();
+>>>>>>> 756fbce418be78fe01ce0b34109367715cc085e3
 	}
 
 }

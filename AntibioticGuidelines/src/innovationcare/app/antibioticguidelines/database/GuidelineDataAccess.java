@@ -247,7 +247,7 @@ public class GuidelineDataAccess {
 		values.put(AntibioticTable.INFO_LINK_TWO, antibiotic.getInfoLink2());
 		values.put(AntibioticTable.INFO_LINK_TWO_TITLE, antibiotic.getInfoLink2Title());
 
-		long id = database.insert(CategoryMenuTable.TABLE_NAME, null, values);
+		long id = database.insert(AntibioticTable.TABLE_NAME, null, values);
 
 		return id;
 	}
@@ -302,5 +302,59 @@ public class GuidelineDataAccess {
 		cursor.close();
 
 		return antibiotic;
+	}
+	
+	public ArrayList<Menu> readMenusBySearch(String query) {
+		String queryToken = "%" + query + "%";
+		// TODO: locale
+		queryToken = queryToken.toLowerCase();
+		
+		final ArrayList<Menu> menuList = new ArrayList<Menu>();
+		
+		Cursor cursor = database.rawQuery("select * from " + MenuTable.TABLE_NAME + " where " + MenuTable.NAME + " like ?", new String[] {queryToken});
+
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Menu menu = new Menu();
+			menu.setId(cursor.getLong(0));
+			menu.setName(cursor.getString(1));
+			menu.setType(cursor.getString(2));
+			menu.setCategoryMenuId(cursor.getLong(3));
+
+			menuList.add(menu);
+
+			cursor.moveToNext();
+		}
+
+		// Close the cursor
+		cursor.close();
+		
+		return menuList;
+	}
+	
+	public ArrayList<Antibiotic> readAntibioticBySearch(String query) {
+		String queryToken = "%" + query + "%";
+		// TODO: locale
+		queryToken = queryToken.toLowerCase();
+		
+		final ArrayList<Antibiotic> AntibioticList = 
+				new ArrayList<Antibiotic>();
+
+		Cursor cursor = database.rawQuery("select " + AntibioticTable.ID + "," + AntibioticTable.NAME + " from " + AntibioticTable.TABLE_NAME + " where " + AntibioticTable.NAME + " like ?", new String[] {queryToken});
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			Antibiotic antibiotic = new Antibiotic();
+			antibiotic.setId(cursor.getLong(0));
+			antibiotic.setName(cursor.getString(1));
+
+			AntibioticList.add(antibiotic);
+
+			cursor.moveToNext();
+		}
+
+		// Close the cursor
+		cursor.close();
+
+		return AntibioticList;
 	}
 }

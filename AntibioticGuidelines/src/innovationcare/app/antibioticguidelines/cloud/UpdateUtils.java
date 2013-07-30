@@ -11,6 +11,7 @@ package innovationcare.app.antibioticguidelines.cloud;
 import innovationcare.app.antibioticguidelines.Antibiotic;
 import innovationcare.app.antibioticguidelines.CategoryMenu;
 import innovationcare.app.antibioticguidelines.database.GuidelineDataAccess;
+import innovationcare.app.antibioticguidelines.ui.MainActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +25,14 @@ import java.util.List;
 
 import android.os.Environment;
 import android.util.Base64;
+<<<<<<< HEAD
+=======
+
+import android.net.Uri;
+import android.os.Environment;
+import android.util.Base64;
+import android.widget.Toast;
+>>>>>>> 756fbce418be78fe01ce0b34109367715cc085e3
 
 import com.kumulos.android.jsonclient.Kumulos;
 import com.kumulos.android.jsonclient.ResponseHandler;
@@ -44,6 +53,71 @@ public class UpdateUtils {
 		getAllMenusFromCloud(dao);
 		getAllInfectionContentsFromCloud(dao);
 		getAllSurgeryContentsFromCloud(dao);
+		getAllAntibioticsFromCloud(dao);
+
+	}
+
+	public static void getAllAntibioticFromCloud(final GuidelineDataAccess dao) {
+		HashMap<String, String> param = new HashMap<String, String>();
+		Kumulos.call("getAntibiotics", param, new ResponseHandler() {
+			@Override
+			public void didCompleteWithResult(Object result) {
+				List<Object> result2 = (ArrayList<Object>) result;
+				for (Object o : result2) {
+					LinkedHashMap<String, Object> ob = (LinkedHashMap<String, Object>) o;
+					String original = ob.get("summaryPDF").toString();
+					String renal = ob.get("renalPDF").toString();
+					String title = ob.get("summaryPDFTitle").toString()
+							+ ".pdf";
+					String renaltitle = ob.get("renalPDFTitle").toString()
+							+ ".pdf";
+					String id = ob.get("antibioticTableID").toString();
+					String infoLink2Title = ob.get("infoLink2Title").toString();
+					String infoLink1Title = ob.get("infoLink1Title").toString();
+					String infoLink1 = ob.get("infoLink1").toString();
+					String infoLink2 = ob.get("infoLink2").toString();
+					Antibiotic antibiotic = new Antibiotic(Long.parseLong(id),
+							title, infoLink1Title, infoLink1, infoLink2Title,
+							infoLink2);
+					dao.insertAntibiotic(antibiotic);
+					byte[] data = Base64.decode(original, Base64.DEFAULT);
+					byte[] renaldata = Base64.decode(renal, Base64.DEFAULT);
+					try {
+						String text = new String(data, "UTF-8");
+						String filename = title;
+						File tempFile = new File(Environment
+								.getExternalStorageDirectory()
+								.getAbsolutePath(), filename);
+						if (tempFile.exists()) {
+
+						}
+						FileOutputStream fos = new FileOutputStream(tempFile);
+						fos.write(data);
+						fos.close();
+						text = new String(renaldata, "UTF-8");
+						filename = renaltitle;
+						tempFile = new File(Environment
+								.getExternalStorageDirectory()
+								.getAbsolutePath(), filename);
+						if (tempFile.exists()) {
+
+						}
+						fos = new FileOutputStream(tempFile);
+						fos.write(data);
+						fos.close();
+					} catch (UnsupportedEncodingException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (FileNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	public static void getAllAntibioticFromCloud(final GuidelineDataAccess dao) {
@@ -214,5 +288,65 @@ public class UpdateUtils {
 				dao.close();
 			}
 		});
+	}
+	
+	public static void getAllAntibioticsFromCloud(final GuidelineDataAccess dao) {
+		HashMap<String, String> param2 = new HashMap<String, String>();
+		param2.put("antibioticTableID", "1");
+		Kumulos.call("getAntibiotics", param2, new ResponseHandler() {
+			@Override
+			public void didCompleteWithResult(Object result) {
+
+				ArrayList<Object> resultSet = (ArrayList<Object>) result;
+				dao.open();
+				for (Object object : resultSet) {
+					LinkedHashMap<String, Object> objectDetails = (LinkedHashMap<String, Object>) object;
+					String id = objectDetails.get("antibioticTableID").toString();
+					String title = objectDetails.get("summaryPDFTitle").toString();
+					String infoLink1Title = objectDetails.get("infoLink1Title").toString();
+					String infoLink1 = objectDetails.get("infoLink1").toString();
+					String infoLink2Title = objectDetails.get("infoLink2Title").toString();
+					String infoLink2 = objectDetails.get("infoLink2").toString();
+					String summaryPDF = objectDetails.get("summaryPDF").toString();
+					String renalPDF = objectDetails.get("renalPDF").toString();
+					innovationcare.app.antibioticguidelines.Antibiotic newAntibiotic = new innovationcare.app.antibioticguidelines.Antibiotic();
+					newAntibiotic.setId(Long.parseLong(id));
+					newAntibiotic.setName(title);
+					newAntibiotic.setInfoLink1(infoLink1);
+					newAntibiotic.setInfoLink1Title(infoLink1Title);
+					newAntibiotic.setInfoLink2(infoLink2);
+					newAntibiotic.setInfoLink2Title(infoLink2Title);
+					dao.insertAntibiotic(newAntibiotic);
+					if(!summaryPDF.isEmpty())
+						storePDFs(summaryPDF, title+".pdf");
+					if(!renalPDF.isEmpty())
+						storePDFs(renalPDF, title+" RDH 2009.pdf");
+				}
+				dao.close();
+			}
+		});
+	}
+	
+	public static void storePDFs(String pdf, String title) {
+		byte[] data = Base64.decode(pdf, Base64.DEFAULT);
+		try {
+			final String filename = title; 
+	        final File tempFile = new File( Environment.getExternalStorageDirectory().getAbsolutePath(), filename );
+	        if ( tempFile.exists() ) {
+	            return;
+	        }
+	        FileOutputStream fos = new FileOutputStream(tempFile);
+	        fos.write(data);
+	        fos.close();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		    		    
 	}
 }
